@@ -1,8 +1,9 @@
-require("dotenv").config();
 const express = require("express");
-const data = require("./utils/data.json");
 const path = require("path");
-
+require("dotenv").config();
+require("./db/connection");
+const data = require("./utils/data.json");
+const routes = require("./routes");
 const app = express();
 
 app.set(process.env.SERVER_PORT_KEYNAME, process.env.PORT);
@@ -12,7 +13,7 @@ app.use(function (req, res, next) {
   console.log(req.url, req.method);
   next();
 });
-
+app.use(data.paths.base, routes);
 app.use(express.static(path.join(__dirname, process.env.STATIC_FOLDER_NAME)));
 
 const server = app.listen(

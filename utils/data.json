@@ -2,7 +2,50 @@
   "serverMessage": {
     "startListening": "Server started listening to PORT: "
   },
-  "httpMessage": {},
-  "dbMessage": {},
-  "errorMessage": {}
+  "httpMessage": {
+    "successCode": 200,
+    "serverErrorCode": 500,
+    "notFoundCode": 500,
+    "success": "Success",
+    "serverError": "Internal server error",
+    "notFoundError": "Not found"
+  },
+  "db": {
+    "model": {
+      "artist": "Artist"
+    },
+    "collection": {
+      "artists": "artists",
+      "arts": "arts"
+    },
+    "connection": {
+      "connected": "connected",
+      "connectedMessage": "Connected",
+      "disconnected": "disconnected",
+      "disconnectedMessage": "Disonnected",
+      "error": "error",
+      "errorMessage": "Database Connection Error"
+    }
+  },
+  "errorMessage": {},
+  "validationMessage": {
+    "name": "Name is required"
+  },
+  "paths": {
+    "base": "/api",
+    "artist": {
+      "id": "artistId",
+      "all": "/artists",
+      "one": "/artists/:artistId"
+    },
+    "art": {
+      "id": "artId",
+      "all": "/arts",
+      "one": "/arts/:artId"
+    }
+  },
+  "order": {
+    "asc": "asc",
+    "desc": "desc"
+  }
 }
