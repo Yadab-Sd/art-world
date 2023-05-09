@@ -12,7 +12,8 @@ artistRouter
 artistRouter
   .route(data.paths.artist.one)
   .get(artistController.getOne)
-  .put(artistController.updateOne)
+  .patch(artistController.partialUpdateOne)
+  .put(artistController.fullUpdateOne)
   .delete(artistController.deleteOne);
 
 artistRouter.use(data.paths.artist.one, artsRouter);

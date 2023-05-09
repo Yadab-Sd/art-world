@@ -20,7 +20,7 @@ const artistSchema = Schema({
     address: String,
     coordinates: {
       type: [Number],
-      index: "2dsphere",
+      index: "2dsphere"
     },
   },
   email: {

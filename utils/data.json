@@ -2,13 +2,12 @@
   "serverMessage": {
     "startListening": "Server started listening to PORT: "
   },
-  "httpMessage": {
-    "successCode": 200,
-    "serverErrorCode": 500,
-    "notFoundCode": 500,
-    "success": "Success",
-    "serverError": "Internal server error",
-    "notFoundError": "Not found"
+  "http": {
+    "success": { "code": 200, "message": "Success" },
+    "deletedMessage": "Deleted",
+    "serverError": { "code": 500, "message": "Internal server error" },
+    "notFound": { "code": 404, "message": "Not found" },
+    "invalidUserInput": { "code": 400, "message": "Invalid user input" }
   },
   "db": {
     "model": {
