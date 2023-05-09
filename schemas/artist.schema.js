@@ -6,7 +6,7 @@ const artistSchema = Schema({
   name: {
     type: String,
     trim: true,
-    required: [true, data.validationMessage.name],
+    required: true,
   },
   dateOfBirth: String,
   rating: {
@@ -16,11 +16,16 @@ const artistSchema = Schema({
     max: 5,
   },
   cost: Number,
-  address: String,
+  location: {
+    address: String,
+    coordinates: {
+      type: [Number],
+      index: "2dsphere",
+    },
+  },
   email: {
     type: String,
     unique: true,
-    required: true,
   },
   arts: [artSchema],
 });

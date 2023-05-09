@@ -65,8 +65,10 @@ module.exports.updateOne = function (req, res) {
   const art = req.body;
   const artistId = req.params.artistId;
   const artId = req.params.artId;
+  console.log("Update:", art);
   Artist.findById(artistId).exec(function (err, artist) {
     if (err) {
+      console.log(1, err);
       res
         .status(data.httpMessage.serverErrorCode)
         .send(data.httpMessage.serverError);
@@ -75,6 +77,7 @@ module.exports.updateOne = function (req, res) {
       old_art.set(art);
       artist.save(function (err) {
         if (err) {
+          console.log(2, err);
           res
             .status(data.httpMessage.serverErrorCode)
             .send(data.httpMessage.serverError);

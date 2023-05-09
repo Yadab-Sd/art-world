@@ -25,6 +25,12 @@
       "disconnectedMessage": "Disonnected",
       "error": "error",
       "errorMessage": "Database Connection Error"
+    },
+    "geo": {
+      "key": "location.coordinates",
+      "typePoint": "Point",
+      "maxDistance": 100000000000,
+      "minDistance": 1
     }
   },
   "errorMessage": {},

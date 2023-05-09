@@ -5,9 +5,7 @@ const artSchema = mongoose.Schema({
     type: String,
     required: true,
   },
-  published: String,
   type: String,
-  price: Number
 });
 
 module.exports = artSchema;
