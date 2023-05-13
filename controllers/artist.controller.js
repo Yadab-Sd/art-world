@@ -6,10 +6,13 @@ const {
 } = require("../utils/methods");
 
 module.exports.getAll = function (req, res) {
-  let offset = 0;
-  let count = 6;
+  let offset = data.query.defaultOffset;
+  let count = data.query.defaultCount;
   if (req.query && req.query.offset) {
-    offset = parseInt(req.query.offset);
+    if (parseInt(req.query.offset) > data.query.maxCount) {
+    } else {
+      offset = parseInt(req.query.offset);
+    }
   }
   if (req.query && req.query.count) {
     count = parseInt(req.query.count);
@@ -65,7 +68,8 @@ module.exports.createOne = function (req, res) {
 };
 
 module.exports.partialUpdateOne = function (req, res) {
-  const _formatDataForFullUpdate = function (data) {
+  const _formatDataForFullUpdate = function () {
+    const data = req.body;
     const formatedData = {};
     if (data.location && (data.location.address || data.location.coordinates)) {
       formatedData.location = {};

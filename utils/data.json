@@ -52,5 +52,10 @@
   "order": {
     "asc": "asc",
     "desc": "desc"
+  },
+  "query": {
+    "defaultOffset": 0,
+    "defaultCount": 6,
+    "maxCount": 8
   }
 }

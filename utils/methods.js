@@ -1,7 +1,24 @@
 const data = require("../utils/data.json");
 const { Artist } = require("../models");
 
-const responseInternalError = function (response, res) {};
+const _setInternalServerError = function (response, err) {
+  response.status = data.http.serverError.code;
+  response.message = err;
+};
+
+const _setNotFoundError = function (response) {
+  response.status = data.http.notFound.code;
+  response.message = data.http.notFound.message;
+};
+
+const _setInvalidUserInputError = function (response) {
+  response.status = data.http.invalidUserInput.code;
+  response.message = data.http.invalidUserInput.message;
+};
+
+const _sendResponse = function (res, response) {
+  res.status(response.status).json(response.message);
+};
 
 const checkErrorAndGiveResponse = function (err, res, outData) {
   const response = {
@@ -9,33 +26,71 @@ const checkErrorAndGiveResponse = function (err, res, outData) {
     message: outData,
   };
   if (err) {
-    response.status = data.http.serverError.code;
-    response.message = err;
+    _setInternalServerError(response, err);
   } else if (!outData) {
-    response.status = data.http.notFound.code;
-    response.message = data.http.notFound.message;
+    _setNotFoundError(response);
   }
-  res.status(response.status).json(response.message);
+  _sendResponse(res, response);
 };
 
-const updateOneArtist = function (req, res, formatDataCallback) {
+const checkErrorAndDoCallback = function (err, res, artist, successCallback) {
+  const response = {
+    status: data.http.success.code,
+    message: data.http.success.message,
+  };
+  if (err) {
+    _setInternalServerError(response, err);
+  } else if (!artist) {
+    _setNotFoundError(response);
+  }
+
+  if (response.status === data.http.success.code) {
+    successCallback();
+  } else {
+    _sendResponse(res, response);
+  }
+};
+
+const updateOneArtist = function (req, res, getFormatedDataToUpdate) {
+  const response = {
+    status: data.http.success.code,
+    message: data.http.success.message,
+  };
   if (req.body) {
-    const formatedArtistForUpdate = formatDataCallback(req.body);
+    const formatedArtistForUpdate = getFormatedDataToUpdate();
     const artistId = req.params.artistId;
+    const artId = req.params.artId;
     Artist.findById(artistId).exec(function (err, artist) {
-      artist.set(formatedArtistForUpdate);
-      artist.save(function (err, updatedArtist) {
-        checkErrorAndGiveResponse(err, res, updatedArtist);
-      });
+      if (err) {
+        _setInternalServerError(response, err);
+      } else if (!artist) {
+        _setNotFoundError(response);
+      }
+
+      if (response.status === data.http.success.code) {
+        artist.set(formatedArtistForUpdate);
+        artist.save(function (err, updatedArtist) {
+          if (err) {
+            _setInternalServerError(response, err);
+          } else {
+            if (artId) {
+              response.message = updatedArtist.arts.id(artId);
+            } else {
+              response.message = updatedArtist;
+            }
+          }
+        });
+      }
     });
   } else {
-    res
-      .status(data.http.invalidUserInput.code)
-      .json(data.http.invalidUserInput.message);
+    _setInvalidUserInputError(response);
   }
+  
+  _sendResponse(res, response);
 };
 
 module.exports = {
   checkErrorAndGiveResponse,
+  checkErrorAndDoCallback,
   updateOneArtist,
 };
