@@ -1,0 +1,8 @@
+<div class="container">
+  <h2>Artists</h2>
+  <ul>
+    <li routerLink="/artists/{{ artist._id }}" *ngFor="let artist of artists">
+      {{ artist.name }}
+    </li>
+  </ul>
+</div>

@@ -1,0 +1,55 @@
+<div class="container">
+  <div class="d-flex align-items-center pb-5">
+    <div
+      id="carouselExampleIndicators"
+      class="carousel slide"
+      data-bs-ride="carousel"
+    >
+      <div class="carousel-indicators">
+        <button
+          type="button"
+          data-bs-target="#carouselExampleIndicators"
+          data-bs-slide-to="0"
+          aria-current="true"
+          [class]="i == currentSlide ? 'active' : ''"
+          *ngFor="let slide of slides; let i = index"
+          (click)="setCurrentSlide(i)"
+        ></button>
+      </div>
+      <div class="carousel-inner">
+        <div class="carousel-item active p-5">
+          <img
+            [src]="slides[0]"
+            alt=""
+            width="600"
+            height="500"
+            class="rounded-full"
+          />
+        </div>
+      </div>
+      <button
+        class="carousel-control-prev"
+        type="button"
+        (click)="slidePrevious()"
+      >
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" (click)="slideNext()">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    </div>
+
+    <div class="ms-4 slider-text">
+      <h1 class="fs-1 fw-bolder">Art & Artist</h1>
+      <p class="text-light font-weight-100">
+        All in all, art is universal and can be found everywhere. It is not only
+        for people who exercise work art but for those who consume it. If there
+        were no art, we wouldn't have been able to see the beauty in things. In
+        other words, art helps us feel relaxed and forget about our problems
+      </p>
+      <span class="text-warning fs-1 leading-0">. . .</span>
+    </div>
+  </div>
+</div>
