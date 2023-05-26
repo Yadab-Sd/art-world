@@ -4,7 +4,10 @@
   },
   "http": {
     "success": { "code": 200, "message": "Success" },
-    "deletedMessage": "Deleted",
+    "deleted": {
+      "code": 200,
+      "message": "Deleted"
+    },
     "serverError": { "code": 500, "message": "Internal server error" },
     "notFound": { "code": 404, "message": "Not found" },
     "invalidUserInput": { "code": 400, "message": "Invalid user input" }
@@ -37,6 +40,7 @@
     "name": "Name is required"
   },
   "paths": {
+    "empty": "/",
     "base": "/api",
     "artist": {
       "id": "artistId",
@@ -56,6 +60,20 @@
   "query": {
     "defaultOffset": 0,
     "defaultCount": 6,
-    "maxCount": 8
+    "maxCount": 18
+  },
+  "httpHeaders": {
+    "accessControlAllowOrigin": {
+      "key": "Access-Control-Allow-Origin",
+      "value": "http://localhost:4200"
+    },
+    "accessControlAllowMethods": {
+      "key": "Access-Control-Allow-Methods",
+      "value": "OPTIONS, DELETE, GET, PUT, PATCH, POST"
+    },
+    "accessControlAllowHeaders": {
+      "key": "Access-Control-Allow-Headers",
+      "value": "X-Requested-With,Content-Type"
+    }
   }
 }

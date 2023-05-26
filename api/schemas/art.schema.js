@@ -5,7 +5,10 @@ const artSchema = mongoose.Schema({
     type: String,
     required: true,
   },
-  type: String,
+  image: {
+    type: String,
+    required: true,
+  },
 });
 
 module.exports = artSchema;

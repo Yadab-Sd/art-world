@@ -46,11 +46,13 @@ module.exports.createOne = function (req, res) {
   const art = req.body;
   Artist.findById(artistId).exec(function (err, artist) {
     const formatDataCallback = function () {
+      console.log(artist.arts);
       if (artist.arts !== undefined) {
         artist.arts.push(art);
       } else {
         artist.arts = [art];
       }
+      console.log(1, artist)
       return artist;
     };
     const _afterGettingArtistSuccessfully = function () {

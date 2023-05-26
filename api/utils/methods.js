@@ -68,11 +68,16 @@ const updateOneArtist = function (req, res, getFormatedDataToUpdate) {
       }
 
       if (response.status === data.http.success.code) {
+        console.log(2, formatedArtistForUpdate)
         artist.set(formatedArtistForUpdate);
+        console.log(3, artist)
         artist.save(function (err, updatedArtist) {
+          console.log(4, updatedArtist, err)
+
           if (err) {
             _setInternalServerError(response, err);
           } else {
+
             if (artId) {
               response.message = updatedArtist.arts.id(artId);
             } else {

@@ -1,0 +1,132 @@
+<div
+  class="offcanvas offcanvas-end p-4"
+  [ngStyle]="{
+    visibility: 'visible',
+    transform: visible ? 'translateX(0)' : 'translateX(100%)'
+  }"
+>
+  <div class="offcanvas-header">
+    <h5 class="text-warning">
+      {{ action == "edit" ? "Update" : "Create" }} Artist
+    </h5>
+    <button
+      type="button"
+      class="btn-close text-reset"
+      data-bs-dismiss="offcanvas"
+      aria-label="Close"
+      (click)="closeDrawer()"
+    ></button>
+  </div>
+  <div class="offcanvas-body pt-0">
+    <form [formGroup]="artistForm" (ngSubmit)="submitForm()">
+      <div class="mb-2">
+        <label class="form-label">Name</label>
+        <input
+          type="text"
+          formControlName="name"
+          class="form-control rounded-2"
+          placeholder="Type Name"
+          required
+        />
+      </div>
+      <div class="mb-2">
+        <label class="form-label">Email address</label>
+        <input
+          type="email"
+          formControlName="email"
+          class="form-control rounded-2"
+          placeholder="name@example.com"
+        />
+      </div>
+      <div class="mb-2">
+        <label class="form-label">Date Of Birth</label>
+        <input
+          type="date"
+          formControlName="dateOfBirth"
+          class="form-control rounded-2"
+          placeholder="Type Cost"
+        />
+      </div>
+      <div class="mb-2">
+        <label class="form-label">Profile Image Link</label>
+        <input
+          type="url"
+          formControlName="image"
+          class="form-control rounded-2"
+          placeholder="https://"
+        />
+      </div>
+      <div class="mb-2">
+        <label class="form-label">Cost</label>
+        <input
+          type="number"
+          formControlName="cost"
+          class="form-control rounded-2"
+          placeholder="Type Cost"
+        />
+      </div>
+      <div class="mb-2">
+        <label class="form-label">Rating</label>
+        <input
+          type="number"
+          formControlName="rating"
+          class="form-control rounded-2"
+          placeholder="Type Rating"
+          [max]="5"
+          [min]="0"
+        />
+      </div>
+      <div formGroupName="location">
+        <div class="mb-2">
+          <label class="form-label">Address</label>
+          <input
+            type="text"
+            formControlName="address"
+            class="form-control rounded-2"
+            placeholder="Type Address"
+          />
+        </div>
+        <div class="d-flex" formArrayName="coordinates">
+          <div class="mb-2">
+            <label class="form-label">Lat</label>
+            <input
+              type="number"
+              [formControlName]="1"
+              class="form-control rounded-2"
+              placeholder="Type Lat"
+            />
+          </div>
+          <div class="mb-2 ms-2">
+            <label class="form-label">Lng</label>
+            <input
+              type="number"
+              [formControlName]="0"
+              class="form-control rounded-2"
+              placeholder="Type Lng"
+            />
+          </div>
+        </div>
+      </div>
+      <div *ngIf="serverMessage">
+        <span
+          [ngClass]="{
+            success: serverMessage.type === 'success',
+            error: serverMessage.type === 'error'
+          }"
+          >{{ serverMessage.text }}</span
+        >
+      </div>
+      <div class="d-flex justify-content-center">
+        <button
+          type="reset"
+          class="btn btn-outline-info me-2 mt-4 px-5 rounded-2"
+        >
+          Reset
+        </button>
+        <button class="btn btn-dark mt-4 px-5 rounded-2">
+          {{ action == "edit" ? "Update" : "Create" }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,66 @@
+<div
+  class="modal show modal-dialog-centered"
+  [ngClass]="{ fade: visible }"
+  [ngStyle]="{ visibility: visible ? 'visible' : 'hidden' }"
+>
+  <form [formGroup]="artForm" (ngSubmit)="submitForm()">
+    <div class="modal-dialog">
+      <div class="modal-content rounded-2 shadow">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">
+            {{ action == "edit" ? "Edit" : "Add" }} Art
+          </h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+            (click)="closeArtFormModal()"
+          ></button>
+        </div>
+        <div class="modal-body px-5 py-4">
+          <div class="mb-3">
+            <label for="recipient-name" class="col-form-label">Title:</label>
+            <input
+              type="text"
+              formControlName="title"
+              placeholder="Type title"
+              class="form-control rounded-1"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="message-text" class="col-form-label">Image URL:</label>
+            <input
+              type="url"
+              formControlName="image"
+              placeholder="Type url"
+              class="form-control rounded-1"
+            />
+          </div>
+          <div *ngIf="serverMessage">
+            <span
+              [ngClass]="{
+                success: serverMessage.type === 'success',
+                error: serverMessage.type === 'error'
+              }"
+              >{{ serverMessage.text }}</span
+            >
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            (click)="closeArtFormModal()"
+            type="button"
+            class="btn btn-secondary rounded-1 px-4"
+            data-bs-dismiss="modal"
+          >
+            Close
+          </button>
+          <button type="submit" class="btn btn-info rounded-1 px-4">
+            {{ action == "edit" ? "Edit" : "Add" }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

@@ -1,8 +1,93 @@
 <div class="container">
-  <h2>Artists</h2>
-  <ul>
-    <li routerLink="/artists/{{ artist._id }}" *ngFor="let artist of artists">
-      {{ artist.name }}
-    </li>
-  </ul>
+  <div class="mb-5 pb-5">
+    <div class="d-flex align-items-center justify-content-between mt-4">
+      <div class="d-flex align-items-center">
+        <h2 class="mb-4 me-2">Artists</h2>
+        <button
+          (click)="visibleSideDrawer ? closeDrawer() : openDrawerForAdd()"
+          class="add-btn btn btn-outline-success mx-2 mb-4"
+        >
+          {{ visibleSideDrawer ? "-" : "+" }}
+        </button>
+      </div>
+      <div class="d-flex align-items-center">
+        <select class="w-20 h-20 me-2" (change)="onLimitChange($event)">
+          <option [value]="6">6</option>
+          <option [value]="12">12</option>
+          <option [value]="18">18</option>
+        </select>
+        <button
+          class="btn fs-6 text-light border p-1 mx-1 px-3"
+          (click)="onPrev()"
+          [disabled]="offset === 0"
+        >
+          &lt;</button
+        ><button
+          class="btn fs-6 text-light border p-1 mx-1 px-3"
+          (click)="onNext()"
+          [disabled]="artists && limit > artists.length"
+        >
+          &gt;
+        </button>
+      </div>
+    </div>
+    <div *ngIf="artists && artists.length" class="mb-5">
+      <div
+        class="
+          d-flex
+          justify-content-between
+          align-items-center
+          p-3
+          px-4
+          mb-2
+          bg-dark
+          text-light
+          rounded-2
+          toast
+          w-100
+        "
+        *ngFor="let artist of artists"
+      >
+        <div class="">
+          <img
+            [src]="artist.image"
+            alt=""
+            width="40"
+            height="40"
+            class="object-fit-cover bg-light rounded-2 me-2"
+          />
+          <span class="fw-normal fs-5"> {{ artist.name }} </span>
+          <span class="text-warning">({{ artist.arts.length }})</span>
+        </div>
+        <div class="d-flex">
+          <button class="btn text-info" routerLink="/artists/{{ artist._id }}">
+            Details
+          </button>
+          <div class="text-info">
+            <button class="btn p-1 text-warning" (click)="onEdit(artist)">
+              <i class="bi-pen fs-5 ms-2"></i>
+            </button>
+            <button
+              class="btn p-1 text-danger"
+              (click)="makeConfirm(artist._id)"
+            >
+              <i class="bi-trash fs-5 ms-1"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="artists && !artists.length">
+      <h4>Empty Artist List</h4>
+    </div>
+  </div>
 </div>
+
+<app-artist-form-drawer
+  [serverMessage]="message"
+  [visible]="visibleSideDrawer"
+  [artistData]="selectedArtist"
+  [action]="action"
+  (onSubmit)="onSubmit($event)"
+  (onClose)="closeDrawer()"
+></app-artist-form-drawer>

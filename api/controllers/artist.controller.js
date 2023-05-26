@@ -9,19 +9,18 @@ module.exports.getAll = function (req, res) {
   let offset = data.query.defaultOffset;
   let count = data.query.defaultCount;
   if (req.query && req.query.offset) {
-    if (parseInt(req.query.offset) > data.query.maxCount) {
-    } else {
-      offset = parseInt(req.query.offset);
-    }
+    offset = parseInt(req.query.offset);
   }
   if (req.query && req.query.count) {
     count = parseInt(req.query.count);
+    if (count > data.query.maxCount) {
+      count = data.query.maxCount;
+    }
   }
 
   if (req.query && req.query.lat && req.query.lng) {
     const lat = parseFloat(req.query.lat);
     const lng = parseFloat(req.query.lng);
-
     const point = {
       type: data.db.geo.typePoint,
       coordinates: [lng, lat],
@@ -99,7 +98,8 @@ module.exports.partialUpdateOne = function (req, res) {
 };
 
 module.exports.fullUpdateOne = function (req, res) {
-  const _formatDataForPartialUpdate = function (data) {
+  const _formatDataForPartialUpdate = function () {
+    const data = req.body;
     const formatedData = {
       location: {
         address: data.location && data.location.address,
@@ -109,6 +109,8 @@ module.exports.fullUpdateOne = function (req, res) {
       dateOfBirth: data.dateOfBirth,
       rating: data.rating,
       cost: data.cost,
+      email: data.email,
+      image: data.image,
     };
     return formatedData;
   };
@@ -119,6 +121,6 @@ module.exports.fullUpdateOne = function (req, res) {
 module.exports.deleteOne = function (req, res) {
   const artistId = req.params.artistId;
   Artist.findByIdAndDelete(artistId).exec(function (err) {
-    checkErrorAndGiveResponse(err, res, data.http.deleted.essage);
+    checkErrorAndGiveResponse(err, res, data.http.deleted.message);
   });
 };

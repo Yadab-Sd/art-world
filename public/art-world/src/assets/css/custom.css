@@ -15,7 +15,18 @@ body {
   height: 120px;
   padding-top: 5px;
 }
-
 .footer-content {
   background-color: #f5f5f5;
+}
+.rounded-1 {
+  border-radius: 2px !important;
+}
+.rounded-2 {
+  border-radius: 4px !important;
+}
+.success {
+  color: #7be57b;
+}
+.error {
+  color: #ff6d62;
 }

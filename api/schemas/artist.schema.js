@@ -8,6 +8,11 @@ const artistSchema = Schema({
     trim: true,
     required: true,
   },
+  email: {
+    type: String,
+    unique: true,
+  },
+  image: String,
   dateOfBirth: String,
   rating: {
     type: Number,
@@ -20,12 +25,8 @@ const artistSchema = Schema({
     address: String,
     coordinates: {
       type: [Number],
-      index: "2dsphere"
+      index: "2dsphere",
     },
-  },
-  email: {
-    type: String,
-    unique: true,
   },
   arts: [artSchema],
 });

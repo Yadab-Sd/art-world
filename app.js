@@ -13,6 +13,22 @@ app.use(function (req, res, next) {
   console.log(req.url, req.method);
   next();
 });
+app.use(data.paths.empty, function (req, res, next) {
+  res.header(
+    data.httpHeaders.accessControlAllowOrigin.key,
+    data.httpHeaders.accessControlAllowOrigin.value
+  );
+  res.header(
+    data.httpHeaders.accessControlAllowMethods.key,
+    data.httpHeaders.accessControlAllowMethods.value
+  );
+  res.header(
+    data.httpHeaders.accessControlAllowHeaders.key,
+    data.httpHeaders.accessControlAllowHeaders.value
+  );
+
+  next();
+});
 app.use(data.paths.base, routes);
 app.use(express.static(path.join(__dirname, process.env.STATIC_FOLDER_NAME)));
 
