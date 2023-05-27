@@ -1,126 +1,120 @@
 const { Artist } = require("../models");
 const data = require("../utils/data.json");
 const {
-  checkErrorAndGiveResponse,
+  createResponse,
   updateOneArtist,
+  handleError,
+  checkContentAndSetResponse,
+  sendResponse,
+  parseOffsetAndCount,
+  formatDataForFullUpdate,
+  formatDataForPartialUpdate,
+  checkBodyAndDoCallback,
 } = require("../utils/methods");
 
-module.exports.getAll = function (req, res) {
-  let offset = data.query.defaultOffset;
-  let count = data.query.defaultCount;
-  if (req.query && req.query.offset) {
-    offset = parseInt(req.query.offset);
-  }
-  if (req.query && req.query.count) {
-    count = parseInt(req.query.count);
-    if (count > data.query.maxCount) {
-      count = data.query.maxCount;
-    }
-  }
-
-  if (req.query && req.query.lat && req.query.lng) {
-    const lat = parseFloat(req.query.lat);
-    const lng = parseFloat(req.query.lng);
-    const point = {
-      type: data.db.geo.typePoint,
-      coordinates: [lng, lat],
-    };
-    const query = {
-      [data.db.geo.key]: {
-        $near: {
-          $geometry: point,
-          $maxDistance: data.db.geo.maxDistance,
-          $minDistance: data.db.geo.minDistance,
-        },
+const _getAllByGeo = function (req, res, offset, count) {
+  const response = createResponse();
+  const lat = parseFloat(req.query.lat);
+  const lng = parseFloat(req.query.lng);
+  const point = {
+    type: data.db.geo.typePoint,
+    coordinates: [lng, lat],
+  };
+  const query = {
+    [data.db.geo.key]: {
+      $near: {
+        $geometry: point,
+        $maxDistance: data.db.geo.maxDistance,
+        $minDistance: data.db.geo.minDistance,
       },
-    };
+    },
+  };
+  Artist.find(query)
+    .skip(offset)
+    .limit(count)
+    .exec()
+    .then((artistList) => checkContentAndSetResponse(artistList, response))
+    .catch((error) => handleError(error, response))
+    .finally(() => sendResponse(res, response));
+};
 
-    Artist.find(query)
-      .skip(offset)
-      .limit(count)
-      .exec(function (err, artists) {
-        checkErrorAndGiveResponse(err, res, artists);
-      });
+module.exports.getAll = function (req, res) {
+  const { offset, count } = parseOffsetAndCount(req);
+  if (req.query && req.query.lat && req.query.lng) {
+    _getAllByGeo(req, res, offset, count);
   } else {
+    const response = createResponse();
     Artist.find()
       .skip(offset)
       .limit(count)
       .sort({ _id: data.order.desc })
-      .exec(function (err, artists) {
-        checkErrorAndGiveResponse(err, res, artists);
-      });
+      .then((artistList) => checkContentAndSetResponse(artistList, response))
+      .catch((error) => handleError(error, response))
+      .finally(() => sendResponse(res, response));
   }
 };
 
 module.exports.getOne = function (req, res) {
+  const response = createResponse();
   const artistId = req.params.artistId;
-  Artist.findById(artistId).exec(function (err, artist) {
-    checkErrorAndGiveResponse(err, res, artist);
-  });
+  Artist.findById(artistId)
+    .exec()
+    .then((artist) => checkContentAndSetResponse(artist, response))
+    .catch((error) => handleError(error, response))
+    .finally(() => sendResponse(res, response));
 };
 
 module.exports.createOne = function (req, res) {
+  const response = createResponse();
   const artist = req.body;
-  Artist.create(artist, function (err, createdArtist) {
-    checkErrorAndGiveResponse(err, res, createdArtist);
-  });
+  Artist.create(artist)
+    .then((artist) => checkContentAndSetResponse(artist, response))
+    .catch((error) => handleError(error, response))
+    .finally(() => sendResponse(res, response));
 };
 
 module.exports.partialUpdateOne = function (req, res) {
-  const _formatDataForFullUpdate = function () {
-    const data = req.body;
-    const formatedData = {};
-    if (data.location && (data.location.address || data.location.coordinates)) {
-      formatedData.location = {};
-      if (data.location.address) {
-        formatedData.location.address = data.location.address;
-      }
-      if (data.location.coordinates) {
-        formatedData.location.coordinates = data.location.coordinates;
-      }
-    }
-    if (data.name) {
-      formatedData.name = data.name;
-    }
-    if (data.dateOfBirth) {
-      formatedData.dateOfBirth = data.dateOfBirth;
-    }
-    if (data.rating) {
-      formatedData.rating = data.rating;
-    }
-    if (data.cost) {
-      formatedData.cost = data.cost;
-    }
-    return formatedData;
+  const afterBodyFound = function () {
+    const response = createResponse();
+    const artistId = req.params.artistId;
+    const formatedDataForUpdate = formatDataForPartialUpdate(req);
+    Artist.findById(artistId)
+      .exec()
+      .then((artist) => checkContentAndSetResponse(artist, response))
+      .then((artist) => updateOneArtist(artist, formatedDataForUpdate))
+      .then((updatedArtist) =>
+        checkContentAndSetResponse(updatedArtist, response)
+      )
+      .catch((error) => handleError(error, response))
+      .finally(() => sendResponse(res, response));
   };
-
-  updateOneArtist(req, res, _formatDataForFullUpdate);
+  checkBodyAndDoCallback(req, afterBodyFound);
 };
 
 module.exports.fullUpdateOne = function (req, res) {
-  const _formatDataForPartialUpdate = function () {
-    const data = req.body;
-    const formatedData = {
-      location: {
-        address: data.location && data.location.address,
-        coordinates: data.location && data.location.coordinates,
-      },
-      name: data.name,
-      dateOfBirth: data.dateOfBirth,
-      rating: data.rating,
-      cost: data.cost,
-      email: data.email,
-      image: data.image,
-    };
-    return formatedData;
+  const afterBodyFound = function () {
+    const response = createResponse();
+    const artistId = req.params.artistId;
+    const formatedDataForUpdate = formatDataForFullUpdate(req);
+    Artist.findById(artistId)
+      .exec()
+      .then((artist) => checkContentAndSetResponse(artist, response))
+      .then((artist) => updateOneArtist(artist, formatedDataForUpdate))
+      .then((updatedArtist) =>
+        checkContentAndSetResponse(updatedArtist, response)
+      )
+      .catch((error) => handleError(error, response))
+      .finally(() => sendResponse(res, response));
   };
-
-  updateOneArtist(req, res, _formatDataForPartialUpdate);
+  checkBodyAndDoCallback(req, afterBodyFound);
 };
 
 module.exports.deleteOne = function (req, res) {
+  const response = createResponse();
   const artistId = req.params.artistId;
-  Artist.findByIdAndDelete(artistId).exec(function (err) {
-    checkErrorAndGiveResponse(err, res, data.http.deleted.message);
-  });
+  Artist.findByIdAndDelete(artistId)
+    .exec()
+    .then((artist) => checkContentAndSetResponse(artist, response))
+    .catch((error) => handleError(error, response))
+    .finally(() => sendResponse(res, response));
 };

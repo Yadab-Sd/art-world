@@ -52,7 +52,6 @@ module.exports.createOne = function (req, res) {
       } else {
         artist.arts = [art];
       }
-      console.log(1, artist)
       return artist;
     };
     const _afterGettingArtistSuccessfully = function () {

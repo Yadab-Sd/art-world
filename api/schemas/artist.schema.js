@@ -1,6 +1,5 @@
 const { Schema } = require("mongoose");
 const artSchema = require("./art.schema");
-const data = require("../utils/data.json");
 
 const artistSchema = Schema({
   name: {

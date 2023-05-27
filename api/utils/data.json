@@ -4,17 +4,17 @@
   },
   "http": {
     "success": { "code": 200, "message": "Success" },
-    "deleted": {
-      "code": 200,
-      "message": "Deleted"
-    },
+    "deleted": { "code": 200, "message": "Deleted" },
     "serverError": { "code": 500, "message": "Internal server error" },
     "notFound": { "code": 404, "message": "Not found" },
-    "invalidUserInput": { "code": 400, "message": "Invalid user input" }
+    "invalidUserInput": { "code": 400, "message": "Invalid user input" },
+    "unauthenticated": { "code": 401, "message": "Wrong credentials" },
+    "unauthorized": { "code": 403, "message": "Access denied" }
   },
   "db": {
     "model": {
-      "artist": "Artist"
+      "artist": "Artist",
+      "user": "User"
     },
     "collection": {
       "artists": "artists",
@@ -51,6 +51,11 @@
       "id": "artId",
       "all": "/arts",
       "one": "/arts/:artId"
+    },
+    "user": {
+      "all": "/users",
+      "register": "/register",
+      "login": "/users/login"
     }
   },
   "order": {
@@ -74,6 +79,10 @@
     "accessControlAllowHeaders": {
       "key": "Access-Control-Allow-Headers",
       "value": "X-Requested-With,Content-Type"
+    },
+    "authorization": {
+      "key": "authorization",
+      "tokenType": "Bearer"
     }
   }
 }

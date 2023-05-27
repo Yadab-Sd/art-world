@@ -1,9 +1,11 @@
 const express = require("express");
 const path = require("path");
 require("dotenv").config();
+
 require("./api/db/connection");
 const data = require("./api/utils/data.json");
 const routes = require("./api/routes");
+
 const app = express();
 
 app.set(process.env.SERVER_PORT_KEYNAME, process.env.PORT);

@@ -1,101 +1,293 @@
 const data = require("./data.json");
-const { Artist } = require("../models");
+const { Artist, User } = require("../models");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const { response } = require("express");
+const { promisify } = require("util");
 
-const _setInternalServerError = function (response, err) {
-  response.status = data.http.serverError.code;
-  response.message = err;
+const createResponse = function () {
+  const response = {
+    status: data.http.success.code,
+    message: data.http.success.message,
+  };
+  return response;
 };
 
-const _setNotFoundError = function (response) {
+const setInternalServerError = function (response) {
+  response.status = data.http.serverError.code;
+  response.message = data.http.serverError.message;
+};
+
+const setError = function (error, response) {
+  response.status = error.status;
+  response.message = error.message;
+};
+
+const setNotFoundError = function (response) {
   response.status = data.http.notFound.code;
   response.message = data.http.notFound.message;
 };
 
-const _setInvalidUserInputError = function (response) {
+const setInvalidUserInputError = function (response) {
   response.status = data.http.invalidUserInput.code;
   response.message = data.http.invalidUserInput.message;
 };
 
-const _sendResponse = function (res, response) {
+const setUnauthenticatedError = function (response) {
+  response.status = data.http.unauthenticated.code;
+  response.message = data.http.unauthenticated.message;
+};
+
+const setUnauthorizededError = function (response) {
+  response.status = data.http.unauthorized.code;
+  response.message = data.http.unauthorized.message;
+};
+
+const handleError = function (error, response) {
+  const base_response = createResponse();
+  console.log(1, error, response);
+  if (response.status == base_response.status) {
+    setInternalServerError(response);
+  } else {
+    setError(error, response);
+  }
+  console.log(2, response);
+};
+
+const sendResponse = function (res, response) {
   res.status(response.status).json(response.message);
 };
 
-const checkErrorAndGiveResponse = function (err, res, outData) {
-  const response = {
-    status: data.http.success.code,
-    message: outData,
-  };
-  if (err) {
-    _setInternalServerError(response, err);
-  } else if (!outData) {
-    _setNotFoundError(response);
-  }
-  _sendResponse(res, response);
+const checkContentAndSetResponse = function (data, response) {
+  return new Promise((resolve, reject) => {
+    if (data) {
+      response.message = data;
+      resolve(data);
+    } else {
+      setNotFoundError(response);
+      reject(response);
+    }
+  });
 };
 
 const checkErrorAndDoCallback = function (err, res, artist, successCallback) {
-  const response = {
-    status: data.http.success.code,
-    message: data.http.success.message,
-  };
+  const response = createResponse();
   if (err) {
-    _setInternalServerError(response, err);
+    setInternalServerError(response);
   } else if (!artist) {
-    _setNotFoundError(response);
+    setNotFoundError(response);
   }
-
   if (response.status === data.http.success.code) {
     successCallback();
   } else {
-    _sendResponse(res, response);
+    sendResponse(res, response);
   }
 };
 
-const updateOneArtist = function (req, res, getFormatedDataToUpdate) {
-  const response = {
-    status: data.http.success.code,
-    message: data.http.success.message,
-  };
-  if (req.body) {
-    const formatedArtistForUpdate = getFormatedDataToUpdate();
-    const artistId = req.params.artistId;
-    const artId = req.params.artId;
-    Artist.findById(artistId).exec(function (err, artist) {
-      if (err) {
-        _setInternalServerError(response, err);
-      } else if (!artist) {
-        _setNotFoundError(response);
+const updateOneArtist = function (existingArtist, newArtist) {
+  existingArtist.set(newArtist);
+  return existingArtist.save();
+};
+
+const updateOneArtistArt = function (existingArtist, newArtist) {
+  existingArtist.set(newArtist);
+  existingArtist.save(function (err, updatedArtist) {
+    if (err) {
+      setInternalServerError(response);
+    } else {
+      if (artId) {
+        response.message = updatedArtist.arts.id(artId);
+      } else {
+        response.message = updatedArtist;
       }
+    }
+  });
+};
 
-      if (response.status === data.http.success.code) {
-        console.log(2, formatedArtistForUpdate)
-        artist.set(formatedArtistForUpdate);
-        console.log(3, artist)
-        artist.save(function (err, updatedArtist) {
-          console.log(4, updatedArtist, err)
-
-          if (err) {
-            _setInternalServerError(response, err);
-          } else {
-
-            if (artId) {
-              response.message = updatedArtist.arts.id(artId);
-            } else {
-              response.message = updatedArtist;
-            }
-          }
-        });
-      }
-    });
+const checkBodyAndDoCallback = function (req, bodyOkCallback) {
+  const response = createResponse();
+  if (!req.body) {
+    setInvalidUserInputError(response);
   } else {
-    _setInvalidUserInputError(response);
+    bodyOkCallback();
   }
-  
-  _sendResponse(res, response);
+};
+
+const generateHashBySalt = function (password, salt, response) {
+  return bcrypt.hash(password, salt);
+};
+
+const createUser = function (user, encryptedPassword, response) {
+  user.password = encryptedPassword;
+  return User.create(user);
+};
+
+const checkUserExists = function (user, response) {
+  return new Promise((resolve, reject) => {
+    if (user) {
+      response.user = user;
+      resolve(user);
+    } else {
+      setUnauthenticatedError(response);
+      reject(response);
+    }
+  });
+};
+
+const formatUserBody = function (req) {
+  let user = {};
+  if (req.body) {
+    user = {
+      name: req.body.name,
+      username: req.body.username,
+      password: req.body.password,
+    };
+  }
+  return user;
+};
+
+const generateSalt = function () {
+  const saltRound = parseInt(process.env.DB_SALT_ROUND);
+  return bcrypt.genSalt(saltRound);
+};
+
+const comparePassword = function (user, encryptedPassword) {
+  return bcrypt.compare(user.password, encryptedPassword);
+};
+
+const checkPasswordMatching = function (isPasswordMatched, response) {
+  return new Promise((resolve, reject) => {
+    if (isPasswordMatched) {
+      resolve(true);
+    } else {
+      setUnauthenticatedError(response);
+      reject(response);
+    }
+  });
+};
+
+const generateToken = function (response) {
+  const payload = {
+    name: response.user.name,
+  };
+  const token = jwt.sign(payload, process.env.JWT_SECRET_CODE, {
+    expiresIn: process.env.JWT_TOKEN_EXPIRE,
+  });
+  response.message = {
+    token: token,
+  };
+};
+
+const authenticateToken = function (req, res, next) {
+  const response = createResponse();
+  const tokenRequiredActions = ["PUT", "PATCH", "DELETE", "POST"];
+  if (tokenRequiredActions.includes(req.method)) {
+    const authorization = req.headers[data.httpHeaders.authorization.key];
+    const token = authorization && authorization.split(" ")[1];
+    const jwtVerify = promisify(jwt.verify);
+
+    if (token) {
+      jwtVerify(token, process.env.JWT_SECRET_CODE)
+        .then(() => {
+          next();
+        })
+        .catch((error) => {
+          console.log(error);
+          setUnauthorizededError(response);
+          sendResponse(res, response);
+        });
+    } else {
+      setUnauthorizededError(response);
+      sendResponse(res, response);
+    }
+  } else {
+    next();
+  }
+};
+
+const parseOffsetAndCount = function (req) {
+  let offset = data.query.defaultOffset;
+  let count = data.query.defaultCount;
+  if (req.query && req.query.offset) {
+    offset = parseInt(req.query.offset);
+  }
+  if (req.query && req.query.count) {
+    count = parseInt(req.query.count);
+    if (count > data.query.maxCount) {
+      count = data.query.maxCount;
+    }
+  }
+  return {
+    offset: offset,
+    count: count,
+  };
+};
+
+const formatDataForFullUpdate = function (req) {
+  const data = req.body;
+  const formatedData = {};
+  if (data.location && (data.location.address || data.location.coordinates)) {
+    formatedData.location = {};
+    if (data.location.address) {
+      formatedData.location.address = data.location.address;
+    }
+    if (data.location.coordinates) {
+      formatedData.location.coordinates = data.location.coordinates;
+    }
+  }
+  if (data.name) {
+    formatedData.name = data.name;
+  }
+  if (data.dateOfBirth) {
+    formatedData.dateOfBirth = data.dateOfBirth;
+  }
+  if (data.rating) {
+    formatedData.rating = data.rating;
+  }
+  if (data.cost) {
+    formatedData.cost = data.cost;
+  }
+  return formatedData;
+};
+
+const formatDataForPartialUpdate = function (req) {
+  const data = req.body;
+  const formatedData = {
+    location: {
+      address: data.location && data.location.address,
+      coordinates: data.location && data.location.coordinates,
+    },
+    name: data.name,
+    dateOfBirth: data.dateOfBirth,
+    rating: data.rating,
+    cost: data.cost,
+    email: data.email,
+    image: data.image,
+  };
+  return formatedData;
 };
 
 module.exports = {
-  checkErrorAndGiveResponse,
+  createResponse,
+  setInternalServerError,
+  setNotFoundError,
+  setInvalidUserInputError,
+  handleError,
+  sendResponse,
+  checkContentAndSetResponse,
   checkErrorAndDoCallback,
   updateOneArtist,
+  checkBodyAndDoCallback,
+  generateHashBySalt,
+  createUser,
+  formatUserBody,
+  checkUserExists,
+  comparePassword,
+  checkPasswordMatching,
+  generateSalt,
+  generateToken,
+  authenticateToken,
+  parseOffsetAndCount,
+  formatDataForFullUpdate,
+  formatDataForPartialUpdate,
 };
