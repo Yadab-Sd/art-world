@@ -65,12 +65,15 @@ module.exports.getOne = function (req, res) {
 };
 
 module.exports.createOne = function (req, res) {
-  const response = createResponse();
-  const artist = req.body;
-  Artist.create(artist)
-    .then((artist) => checkContentAndSetResponse(artist, response))
-    .catch((error) => handleError(error, response))
-    .finally(() => sendResponse(res, response));
+  const afterBodyFound = function () {
+    const response = createResponse();
+    const artist = req.body;
+    Artist.create(artist)
+      .then((artist) => checkContentAndSetResponse(artist, response))
+      .catch((error) => handleError(error, response))
+      .finally(() => sendResponse(res, response));
+  };
+  checkBodyAndDoCallback(req, afterBodyFound);
 };
 
 module.exports.partialUpdateOne = function (req, res) {

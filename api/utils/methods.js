@@ -85,21 +85,89 @@ const checkErrorAndDoCallback = function (err, res, artist, successCallback) {
 };
 
 const updateOneArtist = function (existingArtist, newArtist) {
-  existingArtist.set(newArtist);
+  if (newArtist) {
+    existingArtist.set(newArtist);
+  }
   return existingArtist.save();
 };
 
-const updateOneArtistArt = function (existingArtist, newArtist) {
-  existingArtist.set(newArtist);
-  existingArtist.save(function (err, updatedArtist) {
-    if (err) {
-      setInternalServerError(response);
-    } else {
-      if (artId) {
-        response.message = updatedArtist.arts.id(artId);
+const addArt = function (artist, art, response) {
+  return new Promise((resolve, reject) => {
+    if (artist) {
+      if (artist.arts !== undefined) {
+        artist.arts.push(art);
       } else {
-        response.message = updatedArtist;
+        artist.arts = [art];
       }
+      resolve(artist);
+    } else {
+      setNotFoundError(response);
+      reject(response);
+    }
+  });
+};
+
+const updateArt = function (artist, artId, art, response) {
+  return new Promise((resolve, reject) => {
+    if (artist) {
+      if (artist.arts && artist.arts.id(artId)) {
+        const old_art = artist.arts.id(artId);
+        old_art.set(art);
+        resolve(artist);
+      } else {
+        setNotFoundError(response);
+        reject(response);
+      }
+    } else {
+      setNotFoundError(response);
+      reject(response);
+    }
+  });
+};
+
+const removeArt = function (artist, artId, response) {
+  return new Promise((resolve, reject) => {
+    if (artist) {
+      if (artist.arts && artist.arts.id(artId)) {
+        const art = artist.arts.id(artId);
+        artist.arts = artist.arts.filter((art) => {
+          if (art._id == artId) {
+            return;
+          }
+          return art;
+        });
+        resolve(artist);
+      } else {
+        setNotFoundError(response);
+        reject(response);
+      }
+    } else {
+      setNotFoundError(response);
+      reject(response);
+    }
+  });
+};
+
+const getAllArtsFromArtist = function (artist, response) {
+  return new Promise((resolve, reject) => {
+    if (artist) {
+      response.message = artist.arts;
+      resolve(data);
+    } else {
+      setNotFoundError(response);
+      reject(response);
+    }
+  });
+};
+
+const getOneArtFromArtist = function (artist, artId, response) {
+  return new Promise((resolve, reject) => {
+    if (artist && artist.arts.id(artId)) {
+      response.message = artist.arts.id(artId);
+      resolve(data);
+    } else {
+      setNotFoundError(response);
+      reject(response);
     }
   });
 };
@@ -290,4 +358,9 @@ module.exports = {
   parseOffsetAndCount,
   formatDataForFullUpdate,
   formatDataForPartialUpdate,
+  addArt,
+  updateArt,
+  removeArt,
+  getAllArtsFromArtist,
+  getOneArtFromArtist,
 };
