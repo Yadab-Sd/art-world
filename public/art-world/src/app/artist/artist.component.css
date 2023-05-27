@@ -3,6 +3,10 @@
   padding: 40px;
 }
 
+.min-vh-100, .content-list {
+  min-height: 100vh;
+}
+
 .btn-shadow {
   box-shadow: 0 0.15rem 1.75rem #21283226;
   border-radius: 0.35rem;

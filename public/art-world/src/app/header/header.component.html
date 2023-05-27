@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container" *ngIf="isVisible">
   <div
     class="header py-4 d-flex justify-content-space-between navbar navbar-light"
   >
@@ -21,8 +21,19 @@
     </div>
     <div class="header-right btn-group">
       <button routerLink="/login" class="btn btn-danger rounded">Login</button>
-      <button routerLink="/register" class="btn btn-outline-danger">
+      <button
+        *ngIf="!isLoggedIn()"
+        routerLink="/register"
+        class="btn btn-outline-danger"
+      >
         Register
+      </button>
+      <button
+        *ngIf="isLoggedIn()"
+        routerLink="/login"
+        class="btn btn-outline-danger"
+      >
+        Profile
       </button>
     </div>
   </div>

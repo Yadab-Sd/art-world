@@ -8,6 +8,7 @@ import {
 import { ArtistsDataService } from '../artists-data.service';
 import { Action, Art, Artist } from '../artists/artists.component';
 import { ArtsDataService } from '../arts-data.service';
+import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-artist',
@@ -26,7 +27,8 @@ export class ArtistComponent implements OnInit {
     private _artistsService: ArtistsDataService,
     private _artsService: ArtsDataService,
     private activedRoute: ActivatedRoute,
-    private _router: Router
+    private _router: Router,
+    private _authService: AuthService
   ) {
     this.visibleSideDrawer = false;
     this.visibleArtFormModal = false;
@@ -56,7 +58,7 @@ export class ArtistComponent implements OnInit {
     const data = form.value;
     this._artistsService.updateOne(this.artist._id, data).subscribe({
       error: (error) => {
-        this.setMessage(error.error.message, 'error');
+        this.setMessage(error.error, 'error');
         console.error(error);
       },
       complete: () => {
@@ -85,7 +87,7 @@ export class ArtistComponent implements OnInit {
   deleteOne() {
     this._artistsService.deleteOne(this.artist._id).subscribe({
       error: (error) => {
-        this.setMessage(error.error.message, 'error');
+        this.setMessage(error.error, 'error');
         console.error(error);
       },
       complete: () => {
@@ -113,12 +115,16 @@ export class ArtistComponent implements OnInit {
   removeOneArt(art: Art) {
     this._artsService.deleteOne(this.artist._id, art._id).subscribe({
       error: (error) => {
-        this.setMessage(error.error.message, 'error');
+        this.setMessage(error.error, 'error');
         console.error(error);
       },
       complete: () => {
         this.setArtist();
       },
     });
+  }
+
+  isLoggedIn() {
+    return this._authService.isLoggedIn();
   }
 }

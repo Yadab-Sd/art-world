@@ -7,12 +7,12 @@ const { authenticateToken } = require("../utils/methods");
 artsRouter
   .route(data.paths.art.all)
   .get(artController.getAll)
-  .post(authenticateToken, artController.createOne);
+  .post(artController.createOne);
 
 artsRouter
   .route(data.paths.art.one)
   .get(artController.getOne)
-  .put(authenticateToken, artController.updateOne)
+  .put(artController.updateOne)
   .delete(authenticateToken, artController.deleteOne);
 
 module.exports = artsRouter;

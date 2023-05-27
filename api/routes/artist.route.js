@@ -8,13 +8,13 @@ const { authenticateToken } = require("../utils/methods");
 artistRouter
   .route(data.paths.artist.all)
   .get(artistController.getAll)
-  .post(authenticateToken, artistController.createOne);
+  .post(artistController.createOne);
 
 artistRouter
   .route(data.paths.artist.one)
   .get(artistController.getOne)
-  .patch(authenticateToken, artistController.partialUpdateOne)
-  .put(authenticateToken, artistController.fullUpdateOne)
+  .patch(artistController.partialUpdateOne)
+  .put(artistController.fullUpdateOne)
   .delete(authenticateToken, artistController.deleteOne);
 
 artistRouter.use(data.paths.artist.one, artsRouter);

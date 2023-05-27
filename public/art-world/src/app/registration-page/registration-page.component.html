@@ -1,1 +1,92 @@
-<p>registration-page works!</p>
+<div class="d-flex h-screen">
+  <div class="img-side bg-dark">
+    <img src="../../assets/images/login1.jpeg" alt="" class="img" />
+  </div>
+  <div class="form-side px-5 py-4">
+    <div class="form-header">
+      <div class="containerx">
+        <div
+          class="
+            header
+            py-4
+            d-flex
+            justify-content-space-between
+            navbar navbar-light
+          "
+        >
+          <div class="header-left d-flex align-items-center">
+            <button routerLink="/" class="btn">
+              <h4 class="me-4 mt-1">
+                <span class="text-warning">A</span>rt
+                <span class="text-warning">W</span>orld
+              </h4>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="form-content">
+      <form [formGroup]="registerForm" (ngSubmit)="register()" class="form">
+        <div class="mb-2">
+          <label class="form-label">Name</label>
+          <input
+            type="text"
+            formControlName="name"
+            class="form-control rounded-2"
+            placeholder="Type Name"
+            required
+          />
+        </div>
+        <div class="mb-2">
+          <label class="form-label">Username</label>
+          <input
+            type="text"
+            formControlName="username"
+            class="form-control rounded-2"
+            placeholder="Type username"
+          />
+        </div>
+        <div class="mb-2">
+          <label class="form-label">Password</label>
+          <input
+            type="password"
+            formControlName="password"
+            class="form-control rounded-2"
+            placeholder="Type password"
+          />
+        </div>
+        <div class="mb-2">
+          <label class="form-label">Confirm Password</label>
+          <input
+            type="password"
+            formControlName="confirmPassword"
+            class="form-control rounded-2"
+            placeholder="Type password again"
+          />
+        </div>
+        <div *ngIf="serverMessage">
+          <span
+            [ngClass]="{
+              success: serverMessage.type === 'success',
+              error: serverMessage.type === 'error'
+            }"
+            >{{ serverMessage.text }}</span
+          >
+        </div>
+        <div class="d-flex justify-content-between align-items-center">
+          <p class="m-0 mt-3 text-light">
+            <span class="fs-6"> Already have account? </span>
+            <button
+              [routerLink]="['/login']"
+              routerLinkActive="router-link-active"
+              class="btn btn-outline text-warning mb-1"
+            >
+              Login
+            </button>
+          </p>
+          <button class="btn btn-danger mt-4 px-4 rounded-2">Register</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

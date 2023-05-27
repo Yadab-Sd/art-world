@@ -67,7 +67,7 @@ module.exports.updateOne = function (req, res) {
       .then((artist) => checkContentAndSetResponse(artist, response))
       .then((artist) => updateArt(artist, artId, art, response))
       .then((artist) => updateOneArtist(artist))
-      .then((artist) => checkContentAndSetResponse(artist, response))
+      .then((artist) => getOneArtFromArtist(artist, artId, response))
       .catch((error) => handleError(error, response))
       .finally(() => sendResponse(res, response));
   };
@@ -83,7 +83,7 @@ module.exports.deleteOne = async function (req, res) {
     .then((artist) => checkContentAndSetResponse(artist, response))
     .then((artist) => removeArt(artist, artId, response))
     .then((artist) => updateOneArtist(artist))
-    .then((artist) => checkContentAndSetResponse(artist, response))
+    .then((artist) => getOneArtFromArtist(artist, artId, response))
     .catch((error) => handleError(error, response))
     .finally(() => sendResponse(res, response));
 };

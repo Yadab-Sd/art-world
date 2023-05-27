@@ -70,6 +70,7 @@
             <button
               class="btn p-1 text-danger"
               (click)="makeConfirm(artist._id)"
+              *ngIf="isLoggedIn()"
             >
               <i class="bi-trash fs-5 ms-1"></i>
             </button>

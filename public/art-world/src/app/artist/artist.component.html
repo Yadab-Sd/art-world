@@ -14,7 +14,7 @@
           <button (click)="openDrawer()" class="btn p-1">
             <i class="bi-pen fs-5 ms-2"></i>
           </button>
-          <button (click)="deleteOne()" class="btn p-1">
+          <button *ngIf="isLoggedIn()" (click)="deleteOne()" class="btn p-1">
             <i class="bi-trash fs-5 ms-1"></i>
           </button>
         </h1>
@@ -44,10 +44,10 @@
           + Add
         </button>
       </div>
-      <div>
+      <div class="content-list">
         <div
           *ngIf="artist.arts.length"
-          class="row row-cols-1 row-cols-md-3 g-4"
+          class="row row-cols-1 row-cols-md-4 g-4"
         >
           <div class="col" *ngFor="let art of artist.arts">
             <div class="card rounded-4 border-warning">
@@ -73,6 +73,7 @@
                   Edit
                 </button>
                 <button
+                  *ngIf="isLoggedIn()"
                   (click)="removeOneArt(art)"
                   class="btn btn-warning text-white btn-sm"
                 >

@@ -1,0 +1,36 @@
+.h-screen {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.img-side {
+  flex: 1 1 40%;
+  height: 100vh;
+  max-width: 40%;
+  overflow: hidden;
+}
+
+.img {
+  height: 100%;
+  object-fit: cover;
+}
+
+.form-side {
+  flex: 1 1 60%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.form-content {
+  padding: 0 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 400px;
+  height: calc(100vh - 200px);
+  overflow: hidden;
+}
+
+.form {
+  min-width: 400px;
+}

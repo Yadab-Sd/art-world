@@ -78,7 +78,7 @@
     },
     "accessControlAllowHeaders": {
       "key": "Access-Control-Allow-Headers",
-      "value": "X-Requested-With,Content-Type"
+      "value": "X-Requested-With,Content-Type,Authorization"
     },
     "authorization": {
       "key": "authorization",

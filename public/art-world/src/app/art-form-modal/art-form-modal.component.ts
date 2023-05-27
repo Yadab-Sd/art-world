@@ -85,7 +85,7 @@ export class ArtFormModalComponent {
     const data = form.value;
     this._artsService.createOne(this.artistId, data).subscribe({
       error: (error) => {
-        this.setMessage(error.error.message, 'error');
+        this.setMessage(error.error, 'error');
         console.error(error);
       },
       complete: () => {
@@ -102,7 +102,7 @@ export class ArtFormModalComponent {
       .updateOne(this.artistId, this.artData._id, data)
       .subscribe({
         error: (error) => {
-          this.setMessage(error.error.message, 'error');
+          this.setMessage(error.error, 'error');
           console.error(error);
         },
         complete: () => {
@@ -115,7 +115,7 @@ export class ArtFormModalComponent {
   deleteOne(artistId: string) {
     this._artsService.deleteOne(this.artistId, artistId).subscribe({
       error: (error) => {
-        this.setMessage(error.error.message, 'error');
+        this.setMessage(error.error, 'error');
         console.error(error);
       },
       complete: () => {

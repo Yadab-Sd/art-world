@@ -12,6 +12,7 @@ import {
   MessageType,
 } from '../artist-form-drawer/artist-form-drawer.component';
 import { ArtistsDataService } from '../artists-data.service';
+import { AuthService } from '../auth.service';
 
 export class Artist {
   _id!: string;
@@ -65,9 +66,9 @@ export class Art {
     this.image = data.image;
   }
 
-  toJSON(art: Art) {
+  toJSON() {
     const stringData =
-      '{"title":"' + art.title + '", "image":"' + art.image + '"}';
+      '{"title":"' + this.title + '", "image":"' + this.image + '"}';
     return JSON.parse(stringData);
   }
 }
@@ -89,7 +90,10 @@ export class ArtistsComponent implements OnInit {
   showConfirm!: boolean;
   action!: Action;
 
-  constructor(private _artistsService: ArtistsDataService) {
+  constructor(
+    private _artistsService: ArtistsDataService,
+    private _authService: AuthService
+  ) {
     this.visibleSideDrawer = false;
     this.limit = 6;
     this.offset = 0;
@@ -134,7 +138,7 @@ export class ArtistsComponent implements OnInit {
     const data = form.value;
     this._artistsService.createOne(data).subscribe({
       error: (error) => {
-        this.setMessage(error.error.message, 'error');
+        this.setMessage(error.error, 'error');
         console.error(error);
       },
       complete: () => {
@@ -149,7 +153,7 @@ export class ArtistsComponent implements OnInit {
     const data = form.value;
     this._artistsService.updateOne(this.selectedArtist._id, data).subscribe({
       error: (error) => {
-        this.setMessage(error.error.message, 'error');
+        this.setMessage(error.error, 'error');
         console.error(error);
       },
       complete: () => {
@@ -162,7 +166,7 @@ export class ArtistsComponent implements OnInit {
   deleteOne(artistId: string) {
     this._artistsService.deleteOne(artistId).subscribe({
       error: (error) => {
-        this.setMessage(error.error.message, 'error');
+        this.setMessage(error.error, 'error');
         console.error(error);
       },
       complete: () => {
@@ -209,5 +213,9 @@ export class ArtistsComponent implements OnInit {
   makeConfirm(artistId: string) {
     this.showConfirm = true;
     this.deleteOne(artistId);
+  }
+
+  isLoggedIn() {
+    return this._authService.isLoggedIn();
   }
 }
